@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+ <html>
 <head>
   <style>
     body {
@@ -35,34 +35,12 @@
 
     #results {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .card {
-      width: 300px;
-      height: 400px;
-      border: 1px solid #ccc;
-      margin: 10px;
-      padding: 10px;
-      box-shadow: 2px 2px 5px #ccc;
-    }
-
-    .card h2 {
-      text-align: center;
-    }
-
-    .card ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .card li {
-      margin: 10px 0;
-    }
-
-    .card li span {
-      font-weight: bold;
+    #error {
+      color: red;
     }
   </style>
 </head>
@@ -73,6 +51,7 @@
     <button id="submit">Cerca</button>
   </div>
   <div id="results"></div>
+  <div id="error"></div>
   <script>
     // URL dell'API GraphQL
     const API_URL = "https://studio.apollographql.com/public/star-wars-swapi/variant/current/home";
@@ -81,6 +60,7 @@
     const nameInput = document.getElementById("name");
     const submitButton = document.getElementById("submit");
     const resultsDiv = document.getElementById("results");
+    const errorDiv = document.getElementById("error");
 
     // Funzione per creare una query GraphQL
     function createQuery(name) {
@@ -120,64 +100,49 @@
       }).then(response => response.json());
     }
 
-    // Funzione per creare una card con le informazioni di un personaggio
-    function createCard(person) {
-      // Creare un elemento div con classe card
-      const card = document.createElement("div");
-      card.className = "card";
+    // Funzione per creare una lista con i nomi dei personaggi
+    function createList(people) {
+      // Creare un elemento ul
+      const list = document.createElement("ul");
 
-      // Creare un elemento h2 con il nome del personaggio
-      const name = document.createElement("h2");
-      name.textContent = person.name;
-
-      // Creare un elemento ul con le altre informazioni
-      const info = document.createElement("ul");
-
-      // Aggiungere il pianeta di origine
-      const homeworld = document.createElement("li");
-      homeworld.innerHTML = "<span>Pianeta:</span> " + person.homeworld.name;
-      info.appendChild(homeworld);
-
-      // Aggiungere la specie
-      const species = document.createElement("li");
-      species.innerHTML = "<span>Specie:</span> " + (person.species ? person.species.name : "Umana");
-      info.appendChild(species);
-
-      // Aggiungere i film in cui appare
-      const films = document.createElement("li");
-      films.innerHTML = "<span>Film:</span> ";
-      const filmList = document.createElement("ul");
-      for (let film of person.filmConnection.films) {
-        const filmItem = document.createElement("li");
-        filmItem.textContent = film.title;
-        filmList.appendChild(filmItem);
+      // Aggiungere un elemento li per ogni personaggio
+      for (let person of people) {
+        const item = document.createElement("li");
+        item.textContent = person.name;
+        list.appendChild(item);
       }
-      films.appendChild(filmList);
-      info.appendChild(films);
 
-      // Aggiungere il nome, l'ul e il div al card
-      card.appendChild(name);
-      card.appendChild(info);
-
-      // Restituire il card
-      return card;
+      // Restituire la lista
+      return list;
     }
 
     // Funzione per mostrare i risultati della ricerca
     function showResults(data) {
-      // Svuotare il div dei risultati
+      // Svuotare il div dei risultati e degli errori
       resultsDiv.innerHTML = "";
+      errorDiv.innerHTML = "";
 
-      // Verificare se ci sono personaggi corrispondenti
-      if (data.data.allPeople.people.length > 0) {
-        // Creare e aggiungere una card per ogni personaggio
-        for (let person of data.data.allPeople.people) {
-          const card = createCard(person);
-          resultsDiv.appendChild(card);
+      // Verificare se ci sono errori nell'esecuzione della query
+      if (data.errors) {
+        // Mostrare gli errori nel div degli errori
+        errorDiv.textContent = "Si sono verificati i seguenti errori:";
+        const errorList = document.createElement("ul");
+        for (let error of data.errors) {
+          const errorItem = document.createElement("li");
+          errorItem.textContent = error.message;
+          errorList.appendChild(errorItem);
         }
+        errorDiv.appendChild(errorList);
       } else {
-        // Mostrare un messaggio di errore
-        resultsDiv.textContent = "Nessun personaggio trovato con questo nome.";
+        // Verificare se ci sono personaggi corrispondenti
+        if (data.data.allPeople.people.length > 0) {
+          // Creare e aggiungere una lista con i nomi dei personaggi
+          const list = createList(data.data.allPeople.people);
+          resultsDiv.appendChild(list);
+        } else {
+          // Mostrare un messaggio di errore
+          resultsDiv.textContent = "Nessun personaggio trovato con questo nome.";
+        }
       }
     }
 
@@ -203,3 +168,4 @@
   </script>
 </body>
 </html>
+
