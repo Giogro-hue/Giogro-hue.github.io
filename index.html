@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #search {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    #search input {
+      width: 300px;
+      height: 30px;
+      border: 1px solid #ccc;
+      padding: 5px;
+    }
+
+    #search button {
+      width: 100px;
+      height: 30px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      margin-left: 10px;
+    }
+
+    #results {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .card {
+      width: 300px;
+      height: 400px;
+      border: 1px solid #ccc;
+      margin: 10px;
+      padding: 10px;
+      box-shadow: 2px 2px 5px #ccc;
+    }
+
+    .card h2 {
+      text-align: center;
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .card li {
+      margin: 10px 0;
+    }
+
+    .card li span {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ricerca personaggi di Star Wars</h1>
+  <div id="search">
+    <input type="text" id="name" placeholder="Inserisci il nome del personaggio">
+    <button id="submit">Cerca</button>
+  </div>
+  <div id="results"></div>
+  <script>
+    // URL dell'API GraphQL
+    const API_URL = "https://studio.apollographql.com/public/star-wars-swapi/variant/current/home";
+
+    // Elementi del DOM
+    const nameInput = document.getElementById("name");
+    const submitButton = document.getElementById("submit");
+    const resultsDiv = document.getElementById("results");
+
+    // Funzione per creare una query GraphQL
+    function createQuery(name) {
+      return `
+        query {
+          allPeople(name: "${name}") {
+            people {
+              name
+              homeworld {
+                name
+              }
+              species {
+                name
+              }
+              filmConnection {
+                films {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `;
+    }
+
+    // Funzione per eseguire una richiesta fetch all'API GraphQL
+    function fetchGraphQL(query) {
+      return fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          query: query
+        })
+      }).then(response => response.json());
+    }
+
+    // Funzione per creare una card con le informazioni di un personaggio
+    function createCard(person) {
+      // Creare un elemento div con classe card
+      const card = document.createElement("div");
+      card.className = "card";
+
+      // Creare un elemento h2 con il nome del personaggio
+      const name = document.createElement("h2");
+      name.textContent = person.name;
+
+      // Creare un elemento ul con le altre informazioni
+      const info = document.createElement("ul");
+
+      // Aggiungere il pianeta di origine
+      const homeworld = document.createElement("li");
+      homeworld.innerHTML = "<span>Pianeta:</span> " + person.homeworld.name;
+      info.appendChild(homeworld);
+
+      // Aggiungere la specie
+      const species = document.createElement("li");
+      species.innerHTML = "<span>Specie:</span> " + (person.species ? person.species.name : "Umana");
+      info.appendChild(species);
+
+      // Aggiungere i film in cui appare
+      const films = document.createElement("li");
+      films.innerHTML = "<span>Film:</span> ";
+      const filmList = document.createElement("ul");
+      for (let film of person.filmConnection.films) {
+        const filmItem = document.createElement("li");
+        filmItem.textContent = film.title;
+        filmList.appendChild(filmItem);
+      }
+      films.appendChild(filmList);
+      info.appendChild(films);
+
+      // Aggiungere il nome, l'ul e il div al card
+      card.appendChild(name);
+      card.appendChild(info);
+
+      // Restituire il card
+      return card;
+    }
+
+    // Funzione per mostrare i risultati della ricerca
+    function showResults(data) {
+      // Svuotare il div dei risultati
+      resultsDiv.innerHTML = "";
+
+      // Verificare se ci sono personaggi corrispondenti
+      if (data.data.allPeople.people.length > 0) {
+        // Creare e aggiungere una card per ogni personaggio
+        for (let person of data.data.allPeople.people) {
+          const card = createCard(person);
+          resultsDiv.appendChild(card);
+        }
+      } else {
+        // Mostrare un messaggio di errore
+        resultsDiv.textContent = "Nessun personaggio trovato con questo nome.";
+      }
+    }
+
+    // Aggiungere un listener al pulsante di submit
+    submitButton.addEventListener("click", function() {
+      // Ottenere il valore dell'input
+      const name = nameInput.value;
+
+      // Verificare se l'input è vuoto
+      if (name === "") {
+        // Mostrare un messaggio di errore
+        resultsDiv.textContent = "Per favore, inserisci il nome di un personaggio.";
+      } else {
+        // Creare una query GraphQL con il nome
+        const query = createQuery(name);
+
+        // Eseguire una richiesta fetch all'API GraphQL con la query
+        fetchGraphQL(query)
+          .then(data => showResults(data)) // Mostrare i risultati
+          .catch(error => console.error(error)); // Gestire gli errori
+      }
+    });
+  </script>
+</body>
+</html>
