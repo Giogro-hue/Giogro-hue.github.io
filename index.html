@@ -85,7 +85,7 @@
     // Funzione per creare una query GraphQL
     function createQuery(name) {
       return `
-        query {
+        query allPeople {
           allPeople(name: "${name}") {
             people {
               name
@@ -114,7 +114,8 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          query: query
+          query: query,
+          operationName: "allPeople" // Aggiungere il parametro operationName
         })
       }).then(response => response.json());
     }
