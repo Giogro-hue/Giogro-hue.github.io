@@ -1,0 +1,11 @@
+
+  
+  #input_area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  #search_bar,
+  #search_button {
+    margin: 5px; /* Adjust the margin as needed */}
