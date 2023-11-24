@@ -37,7 +37,7 @@ function retrieve_info(name) {
       for(var i=0; i<namelist.length ; i++) {
             if(name==namelist[i].name) {
                 console.log(namelist[i].id) ;
-                showinfo(namelist.id) ;
+                showinfo(namelist[i].id) ;
                 break ;
          }
         }
@@ -48,6 +48,7 @@ function retrieve_info(name) {
 }
 
 function showinfo(ID) {
+    console.log(ID) ;
     var myQuery = `query Person($personId: ID) {
       person(id: $personId) {
         name
@@ -75,7 +76,7 @@ function showinfo(ID) {
         body: JSON.stringify({
           query: myQuery,
           variables :{
-            "personId": "cGVvcGxlOjE="
+            "personId": `${ID}`
           }
         })
 })
