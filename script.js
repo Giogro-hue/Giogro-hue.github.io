@@ -82,7 +82,8 @@ function showinfo(ID) {
    return response.json() ;
 }) 
 .then(result=>{
-    console.log(result) ;
+    console.log(result)
+    target.textContent = result.data.person.name + " " +  result.data.person.homeworld.name + " " + result.data.person.species;
 })
 }
 //click-->retrieve list of names-->find name_id in list-->query info for id-->process and show info
