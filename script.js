@@ -38,7 +38,8 @@ function retrieve_info(name) {
             if(name==namelist[i].name) {
                 showinfo(namelist[i].id) ;
                 break ;
-         }
+            }
+            if(i==namelist.length-1) {alert("This tool only accepts a NAME SURNAME syntax, it is also case sensitive, try writing your character name again! (Use '-' for robot names like C3-PO)") ;}
         }
     }) 
     .catch(error => {
