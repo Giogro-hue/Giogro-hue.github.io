@@ -82,8 +82,18 @@ function showinfo(ID) {
    return response.json() ;
 }) 
 .then(result=>{
-    console.log(result)
-    target.textContent = result.data.person.name + " " +  result.data.person.homeworld.name + " " + result.data.person.species;
+    console.log(result) ;
+    document.getElementById("name_item").textContent = `Character name : ${result.data.person.name}` ;
+    if(result.data.person.species == null){
+      document.getElementById("species_item").textContent = `Species : Human` ;
+    } else {document.getElementById("species_item").textContent = `Species : ${result.data.person.species.name}` ;}
+    document.getElementById("homeworld_item").textContent = `Homeworld : ${result.data.person.homeworld.name}` ;
+    var film_item = document.getElementById("films_item") ;
+    var filmsArray = result.data.person.filmConnection.films ;
+    for(let i=0 ; i<filmsArray.length ; i++) {
+      film_item.textContent += `${filmsArray[i].title} /` ;
+    }
+    document.getElementById("search_results").style.display = "Block" ; 
 })
 }
 //click-->retrieve list of names-->find name_id in list-->query info for id-->process and show info

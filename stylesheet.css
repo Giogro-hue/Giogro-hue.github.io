@@ -1,11 +1,45 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
-  
-  #input_area {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+h1 {
+  text-align: center;
+}
+
+#input_area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+#search_bar,
+#search_button {
+  margin: 5px; 
+}
+
+/* Styles for phones and such */
+@media only screen and (max-width: 600px) {
+  h1 {
+    font-size: 24px; 
   }
-  
+
+  #input_area {
+    flex-direction: column;
+    margin-top: 10px;
+  }
+
   #search_bar,
   #search_button {
-    margin: 5px; /* Adjust the margin as needed */}
+    margin: 5px 0; /* with this we get more horizontal space on vertical screens (phones)*/
+  }
+}
+
+/* Styles for PC */
+@media only screen and (min-width: 601px) {
+  h1 {
+    font-size: 36px; 
+  }
+}
