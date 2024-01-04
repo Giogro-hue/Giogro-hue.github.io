@@ -1,30 +1,39 @@
 <script>
-	export let name;
+	import {handleInput} from '../lib/handlers'
+    import { Info } from './stores';
+    
+    //initialize variable to store input value
+    let search_text
+    //subscribe to the Info store
+    let currentInfo 
+    Info.subscribe(
+        (info) => {
+            currentInfo = info 
+    }
+   )  
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
+<h1>Star wars finder</h1>
+
+<div class = "searchbar">
+<input type="text" bind:value={search_text} on:keydown={(e) => handleInput(e, search_text)}>
+<button on:click={(e) => handleInput(e, search_text)}>Search</button>
+</div>
+
+{#if currentInfo !== null}
+    <p>Character name : {currentInfo.data.person.name}</p>
+{/if}
+
 
 <style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
+    .searchbar{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+    h1{
+        display: flex;
+        justify-content: center;
+    }
 </style>
